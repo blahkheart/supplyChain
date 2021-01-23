@@ -1,2 +1,2 @@
 # supplyChain
-Supply chain blockchain DApp
+A Supply chain blockchain DApp
