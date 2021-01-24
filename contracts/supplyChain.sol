@@ -3,7 +3,7 @@ pragma solidity >=0.4.21 <0.6.0;
 contract supplyChain {
     uint32 public product_id = 0;       //product ID
     uint32 public participant_id = 0;   //participant ID
-    uint32 public owner_id = 0;                 //ownership ID
+    uint32 public owner_id = 0;         //ownership ID
 
     struct product {
         string modelNumber;
@@ -127,6 +127,28 @@ contract supplyChain {
         return (false);
     }
 
-    
+    function getProvenance(uint32 _prodId) external view returns (uint32[] memory) {
+        return productTrack[_prodId];
+    }
 
+    function getOwnership(uint32 _regId) public view returns (uint32, uint32, address, uint32) {
+        ownership memory currentOwnership = ownerships[_regId];
+        return (currentOwnership.productId, currentOwnership.ownerId, currentOwnership.productOwner, currentOwnership.trxTimeStamp)
+    }
+
+    function authenticateParticipant(
+                uint32 _uid,
+                string memory _uname,
+                string memory _pass,
+                string memory _utype
+            ) public view returns (bool) {
+                if (keccak256(abi.encodePacked(participants[_uid].participantType)) == keccak256(abi.encodePacked(_utype))) {
+                    if(keccak256(abi.encodePacked(participants[_uid].userName)) == keccak256(abi.encodePacked(_uname))) {
+                        if(keccak256(abi.encodePacked(participants[_uid].password)) == keccak256(abi.encodePacked(_pass))) {
+                            return (true);
+                        }
+                    }
+                }
+                return (false);
+            }
 }
