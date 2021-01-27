@@ -1,6 +1,6 @@
 pragma solidity >=0.4.21 <0.6.0;
 
-import './ERC20Interface';
+import './ERC20Interface.sol';
 
 contract ERC20Token is ERC20Interface {
     uint256 constant private MAX_UINT256 = 2**256 - 1;
@@ -46,7 +46,7 @@ contract ERC20Token is ERC20Interface {
             allowed[_from][msg.sender] -= _value;
         }
         emit Transfer(_from, _to, _value);          // solhint-disable-line indent, no-unused-vars
-        return true
+        return true;
     }
 
     //Return the current balance (in tokens) of a specified address

@@ -43,8 +43,8 @@ contract supplyChain {
         participants[userId].participantType = _pType;
         return userId;
     }
-    function getParticipant(uint32 userId) public view returns (string memory, address, string memory) {
-        return (participants[_product_id].userName, participants[_product_id].participantAddress, participants[_product_id].participantType);
+    function getParticipant(uint32 _userId) public view returns (string memory, address, string memory) {
+        return (participants[_userId].userName, participants[_userId].participantAddress, participants[_userId].participantType);
     }
 
     function addProduct(
@@ -69,11 +69,11 @@ contract supplyChain {
     }
 
     modifier onlyOwner(uint32 _productId) {
-        require(msg.sender == products[productId].productOwner,"");
+        require(msg.sender == products[_productId].productOwner,"");
         _;
     }
 
-    function getProduct(uint32 _productId) public view returns (string memory, string memory, uint32, address, uint32) {
+    function getProduct(uint32 _productId) public view returns (string memory, string memory, string memory, uint32, uint32) {
         return (
             products[_productId].modelNumber, 
             products[_productId].partNumber, 
@@ -93,19 +93,19 @@ contract supplyChain {
             
             ownerships[ownership_id].productId = _prodId;
             ownerships[ownership_id].productOwner = p2.participantAddress;
-            ownerships[ownership_id].ownerId = user2Id;
+            ownerships[ownership_id].ownerId = _user2Id;
             ownerships[ownership_id].trxTimeStamp = uint32(now);
             products[_prodId].productOwner = p2.participantAddress;
             productTrack[_prodId].push(ownership_id);
             emit TransferOwnership(_prodId);
             return (true);
         }
-        else if((keccak256(abi.encodePacked(p1.participantType)) == keccak256("Supplier") && 
+        if(keccak256(abi.encodePacked(p1.participantType)) == keccak256("Supplier") && 
             keccak256(abi.encodePacked(p2.participantType)) == keccak256("Supplier")) {
             
             ownerships[ownership_id].productId = _prodId;
             ownerships[ownership_id].productOwner = p2.participantAddress;
-            ownerships[ownership_id].ownerId = user2Id;
+            ownerships[ownership_id].ownerId = _user2Id;
             ownerships[ownership_id].trxTimeStamp = uint32(now);
             products[_prodId].productOwner = p2.participantAddress;
             productTrack[_prodId].push(ownership_id);
@@ -117,7 +117,7 @@ contract supplyChain {
             
             ownerships[ownership_id].productId = _prodId;
             ownerships[ownership_id].productOwner = p2.participantAddress;
-            ownerships[ownership_id].ownerId = user2Id;
+            ownerships[ownership_id].ownerId = _user2Id;
             ownerships[ownership_id].trxTimeStamp = uint32(now);
             products[_prodId].productOwner = p2.participantAddress;
             productTrack[_prodId].push(ownership_id);
@@ -133,22 +133,22 @@ contract supplyChain {
 
     function getOwnership(uint32 _regId) public view returns (uint32, uint32, address, uint32) {
         ownership memory currentOwnership = ownerships[_regId];
-        return (currentOwnership.productId, currentOwnership.ownerId, currentOwnership.productOwner, currentOwnership.trxTimeStamp)
+        return (currentOwnership.productId, currentOwnership.ownerId, currentOwnership.productOwner, currentOwnership.trxTimeStamp);
     }
 
     function authenticateParticipant(
-                uint32 _uid,
-                string memory _uname,
-                string memory _pass,
-                string memory _utype
-            ) public view returns (bool) {
-                if (keccak256(abi.encodePacked(participants[_uid].participantType)) == keccak256(abi.encodePacked(_utype))) {
-                    if(keccak256(abi.encodePacked(participants[_uid].userName)) == keccak256(abi.encodePacked(_uname))) {
-                        if(keccak256(abi.encodePacked(participants[_uid].password)) == keccak256(abi.encodePacked(_pass))) {
-                            return (true);
-                        }
-                    }
+        uint32 _uid,
+        string memory _uname,
+        string memory _pass,
+        string memory _utype
+    ) public view returns (bool) {
+        if (keccak256(abi.encodePacked(participants[_uid].participantType)) == keccak256(abi.encodePacked(_utype))) {
+            if(keccak256(abi.encodePacked(participants[_uid].userName)) == keccak256(abi.encodePacked(_uname))) {
+                if(keccak256(abi.encodePacked(participants[_uid].password)) == keccak256(abi.encodePacked(_pass))) {
+                    return (true);
                 }
-                return (false);
             }
+        }
+        return (false);
+    }
 }
